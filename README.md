@@ -20,7 +20,7 @@ bool testFunc(int a, int b)
 
 //add simple automation test.
 //SIMPLE_FUNCTION_TEST(testName, testFunction, function arguments...);
-SIMPLE_FUNCTION_TEST(testCase1, testFunc, 1, 2); //this macro add "testCase1" test pass when testFunc(1,2) return true
+SIMPLE_FUNCTION_TEST(testCase1, testFunc, 1, 2);
 ```
 
 ### function test
@@ -33,7 +33,7 @@ bool testFunc(int a, int b)
     return a + b == b + a;
 }
 
-FUNCTION_TEST(complexTest, testFunc) // add "complextTest" test "testFunc" function to unreal engine.
+FUNCTION_TEST(complexTest, testFunc)
 {
     ADD_TEST_CASE(test1, 1, 2); // test1 : is testFunc(1,2) return true
     ADD_TEST_CASE(test2, 2, 3); // test2 : is testFunc(2,3) return true
