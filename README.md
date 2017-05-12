@@ -40,3 +40,9 @@ FUNCTION_TEST(complexTest, testFunc)
     ADD_TEST_CASE(test3, 5, 6); // test3 : is testFunc(5,6) return true
 }
 ```
+
+## TO DO
+
+- [ ] function return value test
+- [ ] object member function test
+- [ ] generate random test case & check properties( see [QuickCheck](http://www.cse.chalmers.se/~rjmh/QuickCheck/))
