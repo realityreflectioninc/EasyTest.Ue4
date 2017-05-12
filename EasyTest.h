@@ -3,6 +3,7 @@
 #pragma once
 #include <map>
 #include <tuple>
+#include <type_traits>
 #include "AutomationTest.h"
 #define SIMPLE_FUNCTION_TEST(name, function, ...) \
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(name ## _AutoTest, #name, EAutomationTestFlags::EditorContext | EAutomationTestFlags::SmokeFilter) \
@@ -15,13 +16,14 @@ bool name ## _AutoTest::RunTest(const FString& Parameters)\
 class name##_AutoTestBase : public FAutomationTestBase\
 {\
 public:\
+	using FuncType = decltype(function);\
 	name##_AutoTestBase(const FString& InName, bool bIsComplex)\
 		: FAutomationTestBase(InName, bIsComplex)\
 	{\
 	}\
 \
 protected:\
-	static TestCaseTypeGetter<decltype(function)>::Type TestCases;\
+	static TestCaseTypeGetter<FuncType>::Type TestCases;\
 };\
 TestCaseTypeGetter<decltype(function)>::Type name##_AutoTestBase::TestCases;\
 IMPLEMENT_CUSTOM_COMPLEX_AUTOMATION_TEST(name##_AutoTest, name##_AutoTestBase, #name, EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::EngineFilter)\
@@ -34,7 +36,7 @@ void name##_AutoTest::GetTests(TArray<FString>& OutBeautifiedNames, TArray <FStr
 #define ADD_TEST_CASE(name, ...)\
 OutBeautifiedNames.Add(#name);\
 OutTestCommands.Add(#name);\
-TestCases.Table[ #name ] = std::make_tuple(__VA_ARGS__)
+TestCases.Table[ #name ] = TestCaseTypeGetter<FuncType>::MakeTuple(__VA_ARGS__)
 
 template <int N>
 struct TupleUnpacker
@@ -78,5 +80,10 @@ struct TestCaseTypeGetter;
 template<typename Result, typename... Args>
 struct TestCaseTypeGetter<Result(Args...)>
 {
-	using Type = TestCase<Args...>;
+	static std::tuple<std::decay_t<Args>...> MakeTuple(std::decay_t<Args>&&... args)
+	{
+		return std::make_tuple<std::decay_t<Args>...>(std::forward<std::decay_t<Args>>(args)...);
+	}
+
+	using Type = TestCase<std::decay_t<Args>...>;
 };
